@@ -1,0 +1,97 @@
+E:\Ẩn trình\bin\Debug\net10.0\appsettings.Development.json
+E:\Ẩn trình\bin\Debug\net10.0\appsettings.json
+E:\Ẩn trình\bin\Debug\net10.0\Ẩn trình.staticwebassets.runtime.json
+E:\Ẩn trình\bin\Debug\net10.0\Ẩn trình.staticwebassets.endpoints.json
+E:\Ẩn trình\bin\Debug\net10.0\Ẩn trình.exe
+E:\Ẩn trình\bin\Debug\net10.0\Ẩn trình.deps.json
+E:\Ẩn trình\bin\Debug\net10.0\Ẩn trình.runtimeconfig.json
+E:\Ẩn trình\bin\Debug\net10.0\Ẩn trình.dll
+E:\Ẩn trình\bin\Debug\net10.0\Ẩn trình.pdb
+E:\Ẩn trình\obj\Debug\net10.0\rpswa.dswa.cache.json
+E:\Ẩn trình\obj\Debug\net10.0\Ẩn trình.GeneratedMSBuildEditorConfig.editorconfig
+E:\Ẩn trình\obj\Debug\net10.0\Ẩn trình.AssemblyInfoInputs.cache
+E:\Ẩn trình\obj\Debug\net10.0\Ẩn trình.AssemblyInfo.cs
+E:\Ẩn trình\obj\Debug\net10.0\Ẩn trình.csproj.CoreCompileInputs.cache
+E:\Ẩn trình\obj\Debug\net10.0\Ẩn trình.MvcApplicationPartsAssemblyInfo.cache
+E:\Ẩn trình\obj\Debug\net10.0\Ẩn trình.RazorAssemblyInfo.cache
+E:\Ẩn trình\obj\Debug\net10.0\Ẩn trình.RazorAssemblyInfo.cs
+E:\Ẩn trình\obj\Debug\net10.0\rjimswa.dswa.cache.json
+E:\Ẩn trình\obj\Debug\net10.0\rjsmrazor.dswa.cache.json
+E:\Ẩn trình\obj\Debug\net10.0\rjsmcshtml.dswa.cache.json
+E:\Ẩn trình\obj\Debug\net10.0\scopedcss\Views\Shared\_Layout.cshtml.rz.scp.css
+E:\Ẩn trình\obj\Debug\net10.0\scopedcss\bundle\Ẩn trình.styles.css
+E:\Ẩn trình\obj\Debug\net10.0\scopedcss\projectbundle\Ẩn trình.bundle.scp.css
+E:\Ẩn trình\obj\Debug\net10.0\compressed\978r4knlux-{0}-b9sayid5wm-b9sayid5wm.gz
+E:\Ẩn trình\obj\Debug\net10.0\compressed\ia1srmoikj-{0}-61n19gt1b8-61n19gt1b8.gz
+E:\Ẩn trình\obj\Debug\net10.0\compressed\efu7jwky21-{0}-xtxxf3hu2r-xtxxf3hu2r.gz
+E:\Ẩn trình\obj\Debug\net10.0\compressed\e10jth7cup-{0}-bqjiyaj88i-bqjiyaj88i.gz
+E:\Ẩn trình\obj\Debug\net10.0\compressed\an4rrx6a6o-{0}-c2jlpeoesf-c2jlpeoesf.gz
+E:\Ẩn trình\obj\Debug\net10.0\compressed\wpd4srahh1-{0}-erw9l3u2r3-erw9l3u2r3.gz
+E:\Ẩn trình\obj\Debug\net10.0\compressed\g0yi0dvfwc-{0}-aexeepp0ev-aexeepp0ev.gz
+E:\Ẩn trình\obj\Debug\net10.0\compressed\o9xoe4bvhw-{0}-d7shbmvgxk-d7shbmvgxk.gz
+E:\Ẩn trình\obj\Debug\net10.0\compressed\clnuwm98mc-{0}-ausgxo2sd3-ausgxo2sd3.gz
+E:\Ẩn trình\obj\Debug\net10.0\compressed\fx6fhxmm08-{0}-k8d9w2qqmf-k8d9w2qqmf.gz
+E:\Ẩn trình\obj\Debug\net10.0\compressed\ggpb0ai5kg-{0}-cosvhxvwiu-cosvhxvwiu.gz
+E:\Ẩn trình\obj\Debug\net10.0\compressed\4oqn9k3krb-{0}-ub07r2b239-ub07r2b239.gz
+E:\Ẩn trình\obj\Debug\net10.0\compressed\kdy6imow29-{0}-fvhpjtyr6v-fvhpjtyr6v.gz
+E:\Ẩn trình\obj\Debug\net10.0\compressed\tour80klu2-{0}-b7pk76d08c-b7pk76d08c.gz
+E:\Ẩn trình\obj\Debug\net10.0\compressed\97cijseolo-{0}-fsbi9cje9m-fsbi9cje9m.gz
+E:\Ẩn trình\obj\Debug\net10.0\compressed\nqskhtlkf2-{0}-rzd6atqjts-rzd6atqjts.gz
+E:\Ẩn trình\obj\Debug\net10.0\compressed\7tws3cl7z1-{0}-ee0r1s7dh0-ee0r1s7dh0.gz
+E:\Ẩn trình\obj\Debug\net10.0\compressed\ab30g4v7dq-{0}-dxx9fxp4il-dxx9fxp4il.gz
+E:\Ẩn trình\obj\Debug\net10.0\compressed\8awtp29k1m-{0}-jd9uben2k1-jd9uben2k1.gz
+E:\Ẩn trình\obj\Debug\net10.0\compressed\a3836aj9kz-{0}-khv3u5hwcm-khv3u5hwcm.gz
+E:\Ẩn trình\obj\Debug\net10.0\compressed\jvc8zdzxso-{0}-r4e9w2rdcm-r4e9w2rdcm.gz
+E:\Ẩn trình\obj\Debug\net10.0\compressed\1mu1vw0wys-{0}-lcd1t2u6c8-lcd1t2u6c8.gz
+E:\Ẩn trình\obj\Debug\net10.0\compressed\blo0enq0eu-{0}-c2oey78nd0-c2oey78nd0.gz
+E:\Ẩn trình\obj\Debug\net10.0\compressed\206dkb0y64-{0}-tdbxkamptv-tdbxkamptv.gz
+E:\Ẩn trình\obj\Debug\net10.0\compressed\u9k8kp1o0t-{0}-j5mq2jizvt-j5mq2jizvt.gz
+E:\Ẩn trình\obj\Debug\net10.0\compressed\evn0m6hybu-{0}-06098lyss8-06098lyss8.gz
+E:\Ẩn trình\obj\Debug\net10.0\compressed\e4nbtwh3jb-{0}-nvvlpmu67g-nvvlpmu67g.gz
+E:\Ẩn trình\obj\Debug\net10.0\compressed\9r4u7uz0yb-{0}-s35ty4nyc5-s35ty4nyc5.gz
+E:\Ẩn trình\obj\Debug\net10.0\compressed\xomtasg867-{0}-pj5nd1wqec-pj5nd1wqec.gz
+E:\Ẩn trình\obj\Debug\net10.0\compressed\bwguchl10g-{0}-46ein0sx1k-46ein0sx1k.gz
+E:\Ẩn trình\obj\Debug\net10.0\compressed\623xl7vop7-{0}-v0zj4ognzu-v0zj4ognzu.gz
+E:\Ẩn trình\obj\Debug\net10.0\compressed\jyxy17w69j-{0}-37tfw0ft22-37tfw0ft22.gz
+E:\Ẩn trình\obj\Debug\net10.0\compressed\k4za6ufyxd-{0}-hrwsygsryq-hrwsygsryq.gz
+E:\Ẩn trình\obj\Debug\net10.0\compressed\y8t1mv9nph-{0}-pk9g2wxc8p-pk9g2wxc8p.gz
+E:\Ẩn trình\obj\Debug\net10.0\compressed\xk65me3axe-{0}-ft3s53vfgj-ft3s53vfgj.gz
+E:\Ẩn trình\obj\Debug\net10.0\compressed\0vst4u0mhz-{0}-6cfz1n2cew-6cfz1n2cew.gz
+E:\Ẩn trình\obj\Debug\net10.0\compressed\a2egn3rvz0-{0}-6pdc2jztkx-6pdc2jztkx.gz
+E:\Ẩn trình\obj\Debug\net10.0\compressed\ei5pptrt8g-{0}-493y06b0oq-493y06b0oq.gz
+E:\Ẩn trình\obj\Debug\net10.0\compressed\32652ul9w8-{0}-iovd86k7lj-iovd86k7lj.gz
+E:\Ẩn trình\obj\Debug\net10.0\compressed\7kv5v0rqcs-{0}-vr1egmr9el-vr1egmr9el.gz
+E:\Ẩn trình\obj\Debug\net10.0\compressed\8mdx21t26a-{0}-kbrnm935zg-kbrnm935zg.gz
+E:\Ẩn trình\obj\Debug\net10.0\compressed\gxo5xelyu5-{0}-jj8uyg4cgr-jj8uyg4cgr.gz
+E:\Ẩn trình\obj\Debug\net10.0\compressed\9r42gwkwge-{0}-y7v9cxd14o-y7v9cxd14o.gz
+E:\Ẩn trình\obj\Debug\net10.0\compressed\s066otrjt8-{0}-notf2xhcfb-notf2xhcfb.gz
+E:\Ẩn trình\obj\Debug\net10.0\compressed\zo6qw4udns-{0}-h1s4sie4z3-h1s4sie4z3.gz
+E:\Ẩn trình\obj\Debug\net10.0\compressed\9mztecon21-{0}-63fj8s7r0e-63fj8s7r0e.gz
+E:\Ẩn trình\obj\Debug\net10.0\compressed\hw2nqit7tx-{0}-0j3bgjxly4-0j3bgjxly4.gz
+E:\Ẩn trình\obj\Debug\net10.0\compressed\ws2pd28q3n-{0}-47otxtyo56-47otxtyo56.gz
+E:\Ẩn trình\obj\Debug\net10.0\compressed\rbj67om8nc-{0}-4v8eqarkd7-4v8eqarkd7.gz
+E:\Ẩn trình\obj\Debug\net10.0\compressed\i5f2t1anzj-{0}-356vix0kms-356vix0kms.gz
+E:\Ẩn trình\obj\Debug\net10.0\compressed\xy511svmtf-{0}-83jwlth58m-83jwlth58m.gz
+E:\Ẩn trình\obj\Debug\net10.0\compressed\jp1fru906w-{0}-mrlpezrjn3-mrlpezrjn3.gz
+E:\Ẩn trình\obj\Debug\net10.0\compressed\uetp384le0-{0}-lzl9nlhx6b-lzl9nlhx6b.gz
+E:\Ẩn trình\obj\Debug\net10.0\compressed\s1zb6xiqvl-{0}-ag7o75518u-ag7o75518u.gz
+E:\Ẩn trình\obj\Debug\net10.0\compressed\oabhd9l3tq-{0}-x0q3zqp4vz-x0q3zqp4vz.gz
+E:\Ẩn trình\obj\Debug\net10.0\compressed\vgcnz3yg1t-{0}-0i3buxo5is-0i3buxo5is.gz
+E:\Ẩn trình\obj\Debug\net10.0\compressed\1th6zh5r9i-{0}-o1o13a6vjx-o1o13a6vjx.gz
+E:\Ẩn trình\obj\Debug\net10.0\compressed\wfucv19j0o-{0}-ttgo8qnofa-ttgo8qnofa.gz
+E:\Ẩn trình\obj\Debug\net10.0\compressed\0rcj1wxqoh-{0}-2z0ns9nrw6-2z0ns9nrw6.gz
+E:\Ẩn trình\obj\Debug\net10.0\compressed\9wuplgitrb-{0}-muycvpuwrr-muycvpuwrr.gz
+E:\Ẩn trình\obj\Debug\net10.0\compressed\rtbepfg13z-{0}-87fc7y1x7t-87fc7y1x7t.gz
+E:\Ẩn trình\obj\Debug\net10.0\compressed\090odl576s-{0}-mlv21k5csn-mlv21k5csn.gz
+E:\Ẩn trình\obj\Debug\net10.0\compressed\glygb6g6e6-{0}-vso09dvcnm-vso09dvcnm.gz
+E:\Ẩn trình\obj\Debug\net10.0\compressed\d2x086emmz-{0}-vso09dvcnm-vso09dvcnm.gz
+E:\Ẩn trình\obj\Debug\net10.0\staticwebassets.build.json
+E:\Ẩn trình\obj\Debug\net10.0\staticwebassets.build.json.cache
+E:\Ẩn trình\obj\Debug\net10.0\staticwebassets.development.json
+E:\Ẩn trình\obj\Debug\net10.0\staticwebassets.build.endpoints.json
+E:\Ẩn trình\obj\Debug\net10.0\swae.build.ex.cache
+E:\Ẩn trình\obj\Debug\net10.0\Ẩn trình.dll
+E:\Ẩn trình\obj\Debug\net10.0\refint\Ẩn trình.dll
+E:\Ẩn trình\obj\Debug\net10.0\Ẩn trình.pdb
+E:\Ẩn trình\obj\Debug\net10.0\Ẩn trình.genruntimeconfig.cache
+E:\Ẩn trình\obj\Debug\net10.0\ref\Ẩn trình.dll

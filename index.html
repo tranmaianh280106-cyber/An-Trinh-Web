@@ -1,0 +1,1579 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ẩn Trình – Hành Trình Bí Ẩn Của Bạn</title>
+    <meta name="description" content="Ẩn Trình – Nền tảng du lịch mù đầu tiên tại Việt Nam. Nhập ngân sách, trả lời trắc nghiệm, AI sẽ chọn điểm đến hoàn hảo cho bạn!">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
+
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+
+    <style>
+        :root {
+            --primary: #f97316;
+            --primary-light: #fed7aa;
+            --primary-dark: #c2410c;
+            --secondary: #8b5cf6;
+            --secondary-light: #ddd6fe;
+            --accent: #06b6d4;
+            --accent-light: #cffafe;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --bg: #fff7f0;
+            --bg2: #fef3e2;
+            --surface: #ffffff;
+            --surface2: #fafafa;
+            --text: #1a0a00;
+            --text2: #6b4226;
+            --text3: #a16207;
+            --border: #fed7aa;
+            --shadow: rgba(249,115,22,0.15);
+            --radius: 1.25rem;
+            --radius-sm: 0.75rem;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* ========== SCROLLBAR ========== */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--bg2); }
+        ::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 99px; }
+
+        /* ========== LAYOUT UTILS ========== */
+        .hidden { display: none !important; }
+        .screen { min-height: 100vh; }
+
+        /* ========== DECORATIVE BLOBS ========== */
+        .blob-wrap {
+            position: fixed; inset: 0; z-index: 0;
+            pointer-events: none; overflow: hidden;
+        }
+        .blob {
+            position: absolute; border-radius: 50%;
+            filter: blur(90px); opacity: 0.35;
+        }
+        .blob-a { width: 500px; height: 500px; background: var(--primary); top: -15%; left: -10%; }
+        .blob-b { width: 400px; height: 400px; background: var(--secondary); bottom: -10%; right: -8%; }
+        .blob-c { width: 300px; height: 300px; background: var(--accent); top: 40%; right: 20%; }
+
+        /* ========== GLASS CARD ========== */
+        .card {
+            background: rgba(255,255,255,0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1.5px solid rgba(249,115,22,0.18);
+            border-radius: var(--radius);
+            box-shadow: 0 8px 40px var(--shadow), 0 2px 8px rgba(0,0,0,0.06);
+        }
+
+        /* ========== BUTTONS ========== */
+        .btn {
+            display: inline-flex; align-items: center; justify-content: center;
+            gap: 0.5rem; padding: 0.75rem 1.75rem;
+            border-radius: 99px; border: none; cursor: pointer;
+            font-family: 'Inter', sans-serif; font-weight: 700; font-size: 0.95rem;
+            transition: all 0.22s ease; text-decoration: none;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, #e85d04 100%);
+            color: #fff;
+            box-shadow: 0 4px 20px rgba(249,115,22,0.4);
+        }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(249,115,22,0.5); }
+        .btn-primary:active { transform: translateY(0); }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, var(--secondary) 0%, #6d28d9 100%);
+            color: #fff;
+            box-shadow: 0 4px 20px rgba(139,92,246,0.3);
+        }
+        .btn-secondary:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(139,92,246,0.4); }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+        }
+        .btn-outline:hover { background: var(--primary); color: #fff; transform: translateY(-2px); }
+
+        .btn-success {
+            background: linear-gradient(135deg, var(--success) 0%, #059669 100%);
+            color: #fff;
+            box-shadow: 0 4px 20px rgba(16,185,129,0.35);
+        }
+        .btn-success:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(16,185,129,0.45); }
+
+        .btn-lg { padding: 1rem 2.5rem; font-size: 1.1rem; }
+        .btn-sm { padding: 0.5rem 1.2rem; font-size: 0.85rem; }
+        .btn-block { width: 100%; }
+
+        /* ========== INPUTS ========== */
+        .input-field {
+            width: 100%;
+            background: #fff;
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 0.85rem 1.2rem;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.95rem;
+            color: var(--text);
+            transition: all 0.2s;
+            outline: none;
+        }
+        .input-field:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(249,115,22,0.15);
+        }
+        .input-field::placeholder { color: #ccc; }
+
+        label.field-label {
+            display: block; font-size: 0.85rem;
+            font-weight: 600; color: var(--text2);
+            margin-bottom: 0.4rem; letter-spacing: 0.02em;
+        }
+
+        /* ========== NAV ========== */
+        #app-nav {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+            background: rgba(255,255,255,0.9);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid rgba(249,115,22,0.15);
+            box-shadow: 0 2px 20px rgba(249,115,22,0.1);
+        }
+        .nav-inner {
+            max-width: 1200px; margin: 0 auto;
+            padding: 0.85rem 1.5rem;
+            display: flex; align-items: center; justify-content: space-between;
+        }
+        .nav-logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.6rem; font-weight: 900;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text; background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-decoration: none;
+        }
+        .nav-tabs {
+            display: flex; gap: 0.25rem;
+            background: var(--bg2);
+            padding: 0.3rem; border-radius: 99px;
+        }
+        .nav-tab {
+            padding: 0.5rem 1.2rem; border-radius: 99px;
+            font-size: 0.88rem; font-weight: 600;
+            cursor: pointer; border: none;
+            background: transparent; color: var(--text2);
+            transition: all 0.2s; white-space: nowrap;
+        }
+        .nav-tab.active, .nav-tab:hover {
+            background: var(--primary); color: #fff;
+        }
+        .nav-user { display: flex; align-items: center; gap: 0.75rem; }
+        .nav-avatar {
+            width: 38px; height: 38px; border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            display: flex; align-items: center; justify-content: center;
+            color: #fff; font-weight: 700; font-size: 0.9rem;
+            cursor: pointer;
+        }
+
+        /* ========== HERO / AUTH SCREEN ========== */
+        #screen-auth {
+            display: flex; align-items: center; justify-content: center;
+            min-height: 100vh;
+            padding: 2rem 1rem;
+            position: relative; z-index: 1;
+        }
+        .auth-container {
+            display: grid; grid-template-columns: 1fr 1fr;
+            gap: 3rem; max-width: 1000px; width: 100%;
+            align-items: center;
+        }
+        @media(max-width: 768px) {
+            .auth-container { grid-template-columns: 1fr; }
+            .auth-hero { display: none; }
+        }
+        .auth-hero h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 3.5rem; font-weight: 900; line-height: 1.1;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text; background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1.2rem;
+        }
+        .auth-hero p { font-size: 1.1rem; color: var(--text2); line-height: 1.7; margin-bottom: 2rem; }
+        .feature-pills { display: flex; flex-wrap: wrap; gap: 0.6rem; }
+        .pill {
+            display: inline-flex; align-items: center; gap: 0.4rem;
+            padding: 0.45rem 1rem; border-radius: 99px;
+            font-size: 0.82rem; font-weight: 600;
+            background: var(--primary-light); color: var(--primary-dark);
+        }
+        .auth-card { padding: 2.5rem; }
+        .auth-card h2 {
+            font-size: 1.8rem; font-weight: 800; margin-bottom: 0.4rem;
+            color: var(--text);
+        }
+        .auth-card .subtitle { color: var(--text2); margin-bottom: 2rem; font-size: 0.95rem; }
+        .social-btn {
+            display: flex; align-items: center; justify-content: center; gap: 0.75rem;
+            width: 100%; padding: 0.9rem; border-radius: var(--radius-sm);
+            border: 1.5px solid var(--border); background: #fff;
+            font-weight: 600; font-size: 0.95rem; cursor: pointer;
+            transition: all 0.2s; color: var(--text);
+            margin-bottom: 1rem;
+        }
+        .social-btn:hover { border-color: var(--primary); box-shadow: 0 2px 12px var(--shadow); }
+        .divider {
+            display: flex; align-items: center; gap: 1rem;
+            margin: 1rem 0; color: #ccc; font-size: 0.85rem;
+        }
+        .divider::before, .divider::after {
+            content: ''; flex: 1; height: 1px; background: var(--border);
+        }
+
+        /* ========== QUIZ SCREEN ========== */
+        #screen-quiz {
+            display: flex; align-items: center; justify-content: center;
+            min-height: 100vh; padding: 6rem 1rem 2rem;
+            position: relative; z-index: 1;
+        }
+        .quiz-wrap { max-width: 640px; width: 100%; }
+        .step-indicator {
+            display: flex; align-items: center; gap: 0.5rem;
+            margin-bottom: 2rem;
+        }
+        .step-dot {
+            width: 36px; height: 36px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 700; font-size: 0.85rem;
+            border: 2px solid var(--border); color: var(--text3);
+            background: #fff; transition: all 0.3s;
+        }
+        .step-dot.active { background: var(--primary); border-color: var(--primary); color: #fff; }
+        .step-dot.done { background: var(--success); border-color: var(--success); color: #fff; }
+        .step-line { flex: 1; height: 2px; background: var(--border); }
+        .step-line.done { background: var(--success); }
+        .quiz-card { padding: 2.5rem; }
+        .quiz-card h2 { font-size: 1.6rem; font-weight: 800; margin-bottom: 0.5rem; }
+        .quiz-card .q-label { color: var(--text2); margin-bottom: 1.5rem; }
+        .quiz-question { margin-bottom: 2rem; }
+        .quiz-question .q-text { font-weight: 700; margin-bottom: 1rem; font-size: 1.05rem; }
+        .quiz-options { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+        .quiz-opt {
+            padding: 1rem; border-radius: var(--radius-sm);
+            border: 2px solid var(--border); background: #fff;
+            cursor: pointer; font-weight: 600; text-align: center;
+            transition: all 0.2s; font-size: 0.9rem; color: var(--text);
+        }
+        .quiz-opt .opt-icon { font-size: 1.5rem; margin-bottom: 0.4rem; display: block; }
+        .quiz-opt:hover { border-color: var(--primary); color: var(--primary); transform: translateY(-2px); box-shadow: 0 4px 16px var(--shadow); }
+        .quiz-opt.selected { border-color: var(--primary); background: var(--primary-light); color: var(--primary-dark); }
+        .quiz-progress { height: 6px; background: var(--border); border-radius: 99px; margin-bottom: 2rem; }
+        .quiz-progress-bar { height: 100%; background: linear-gradient(90deg, var(--primary), var(--secondary)); border-radius: 99px; transition: width 0.4s ease; }
+
+        /* ========== SETUP SCREEN ========== */
+        #screen-setup {
+            display: flex; align-items: center; justify-content: center;
+            min-height: 100vh; padding: 6rem 1rem 2rem;
+            position: relative; z-index: 1;
+        }
+        .setup-wrap { max-width: 640px; width: 100%; }
+        .setup-card { padding: 2.5rem; }
+        .budget-slider { width: 100%; -webkit-appearance: none; height: 8px; border-radius: 99px; background: var(--border); outline: none; }
+        .budget-slider::-webkit-slider-thumb {
+            -webkit-appearance: none; width: 24px; height: 24px;
+            border-radius: 50%; background: var(--primary); cursor: pointer;
+            box-shadow: 0 2px 10px rgba(249,115,22,0.5);
+        }
+        .budget-display {
+            text-align: right; font-size: 1.5rem; font-weight: 800;
+            color: var(--primary); margin-top: 0.5rem;
+        }
+        .tag-cloud { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.5rem; }
+        .tag {
+            padding: 0.35rem 0.9rem; border-radius: 99px;
+            border: 1.5px solid var(--border); font-size: 0.82rem;
+            font-weight: 600; cursor: pointer; background: #fff;
+            color: var(--text2); transition: all 0.2s;
+        }
+        .tag:hover, .tag.selected { background: var(--primary); border-color: var(--primary); color: #fff; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+        .form-group { margin-bottom: 1.25rem; }
+        .section-divider { border: none; border-top: 1.5px solid var(--border); margin: 1.5rem 0; }
+
+        /* ========== WAITING SCREEN ========== */
+        #screen-waiting {
+            display: flex; align-items: center; justify-content: center;
+            min-height: 100vh; padding: 6rem 1rem 2rem;
+            position: relative; z-index: 1;
+        }
+        .waiting-wrap { max-width: 580px; width: 100%; }
+        .waiting-card { padding: 3rem 2.5rem; text-align: center; }
+        .plane-anim { font-size: 4rem; animation: fly 2s infinite ease-in-out; display: block; margin-bottom: 1.5rem; }
+        @keyframes fly {
+            0%, 100% { transform: translateY(0) rotate(-5deg); }
+            50% { transform: translateY(-12px) rotate(5deg); }
+        }
+        .countdown-box {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: var(--radius);
+            padding: 2rem; margin: 1.5rem 0; color: #fff;
+        }
+        .countdown-label { font-size: 0.85rem; opacity: 0.85; margin-bottom: 0.5rem; }
+        .countdown-time { font-family: 'Inter', monospace; font-size: 3rem; font-weight: 900; letter-spacing: 0.05em; }
+        .info-row {
+            display: flex; align-items: center; gap: 1rem;
+            background: var(--bg2); border-radius: var(--radius-sm);
+            padding: 1rem 1.25rem; margin-bottom: 0.75rem;
+            text-align: left;
+        }
+        .info-row .icon { font-size: 1.5rem; }
+        .info-row .info-label { font-size: 0.8rem; color: var(--text2); }
+        .info-row .info-val { font-weight: 700; font-size: 0.95rem; }
+        .hint-chips { display: flex; flex-wrap: wrap; gap: 0.5rem; justify-content: center; margin-top: 1rem; }
+        .hint-chip {
+            background: var(--accent-light); color: #0e7490;
+            padding: 0.35rem 1rem; border-radius: 99px;
+            font-size: 0.82rem; font-weight: 600;
+        }
+
+        /* ========== DASHBOARD / MAIN APP SCREEN ========== */
+        #screen-dashboard {
+            min-height: 100vh;
+            padding: 5rem 0 2rem;
+            position: relative; z-index: 1;
+        }
+        .dash-container { max-width: 1200px; margin: 0 auto; padding: 2rem 1.5rem; }
+        .dash-header { margin-bottom: 2rem; }
+        .dash-header h2 { font-size: 2rem; font-weight: 800; margin-bottom: 0.25rem; }
+        .dash-header p { color: var(--text2); }
+        .dash-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 1.5rem;
+        }
+        @media(max-width: 900px) { .dash-grid { grid-template-columns: 1fr; } }
+        .dash-card { padding: 1.5rem; margin-bottom: 1.5rem; }
+        .dash-card h3 { font-size: 1.1rem; font-weight: 700; margin-bottom: 1.25rem; display: flex; align-items: center; gap: 0.5rem; }
+        .dash-card h3 i { color: var(--primary); }
+
+        /* Booking status */
+        .booking-item {
+            display: flex; align-items: center; gap: 1rem;
+            padding: 1rem; border-radius: var(--radius-sm);
+            border: 1.5px solid var(--border); background: #fff;
+            margin-bottom: 0.75rem; cursor: pointer;
+            transition: all 0.2s;
+        }
+        .booking-item:hover { border-color: var(--primary); box-shadow: 0 4px 16px var(--shadow); }
+        .booking-thumb {
+            width: 56px; height: 56px; border-radius: 0.75rem;
+            background: linear-gradient(135deg, var(--primary-light), var(--secondary-light));
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.5rem; flex-shrink: 0;
+        }
+        .booking-info { flex: 1; }
+        .booking-name { font-weight: 700; font-size: 0.95rem; }
+        .booking-meta { font-size: 0.8rem; color: var(--text2); margin-top: 0.2rem; }
+        .badge {
+            padding: 0.25rem 0.75rem; border-radius: 99px;
+            font-size: 0.78rem; font-weight: 700;
+        }
+        .badge-waiting { background: #fef9c3; color: #a16207; }
+        .badge-revealed { background: #dcfce7; color: #166534; }
+        .badge-completed { background: #dbeafe; color: #1d4ed8; }
+        .badge-cancelled { background: #fee2e2; color: #991b1b; }
+
+        /* Stats cards */
+        .stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem; margin-bottom: 1.5rem; }
+        @media(max-width: 600px) { .stat-grid { grid-template-columns: 1fr 1fr; } }
+        .stat-card {
+            background: #fff; border: 1.5px solid var(--border);
+            border-radius: var(--radius-sm); padding: 1.25rem;
+            text-align: center;
+        }
+        .stat-icon { font-size: 1.5rem; margin-bottom: 0.5rem; }
+        .stat-num { font-size: 1.6rem; font-weight: 900; color: var(--primary); }
+        .stat-label { font-size: 0.78rem; color: var(--text2); font-weight: 600; }
+
+        /* Weather widget */
+        .weather-widget {
+            background: linear-gradient(135deg, var(--accent), #0891b2);
+            border-radius: var(--radius); padding: 1.5rem; color: #fff;
+            margin-bottom: 1rem;
+        }
+        .weather-widget h4 { font-size: 0.85rem; opacity: 0.85; margin-bottom: 0.5rem; }
+        .weather-main { display: flex; align-items: center; gap: 1rem; }
+        .weather-temp { font-size: 2.5rem; font-weight: 900; }
+        .weather-desc { opacity: 0.9; font-size: 0.9rem; }
+        .weather-hint { font-size: 0.82rem; margin-top: 0.75rem; opacity: 0.8; font-style: italic; }
+
+        /* Destination reveal card */
+        .reveal-card {
+            background: linear-gradient(135deg, var(--primary), #e85d04, var(--secondary));
+            border-radius: var(--radius); padding: 2rem; color: #fff;
+            margin-bottom: 1.5rem; text-align: center; position: relative; overflow: hidden;
+        }
+        .reveal-card::before {
+            content: '🗺️'; position: absolute; right: -10px; bottom: -10px;
+            font-size: 7rem; opacity: 0.2;
+        }
+        .reveal-card h3 { font-size: 1.05rem; opacity: 0.9; margin-bottom: 0.5rem; }
+        .reveal-card .reveal-name { font-family: 'Playfair Display', serif; font-size: 2.2rem; font-weight: 900; margin-bottom: 0.5rem; }
+        .reveal-card .reveal-sub { opacity: 0.85; margin-bottom: 1.25rem; font-size: 0.9rem; }
+
+        /* Timeline */
+        .timeline { position: relative; padding-left: 2rem; }
+        .timeline::before { content: ''; position: absolute; left: 0.5rem; top: 0; bottom: 0; width: 2px; background: var(--border); }
+        .timeline-item { position: relative; margin-bottom: 1.25rem; }
+        .timeline-item::before {
+            content: ''; position: absolute; left: -1.625rem; top: 0.25rem;
+            width: 12px; height: 12px; border-radius: 50%;
+            background: var(--primary); border: 2px solid #fff;
+            box-shadow: 0 0 0 2px var(--primary);
+        }
+        .timeline-time { font-size: 0.75rem; color: var(--text3); font-weight: 600; margin-bottom: 0.2rem; }
+        .timeline-content { background: #fff; border: 1.5px solid var(--border); border-radius: var(--radius-sm); padding: 0.85rem 1rem; }
+        .timeline-content strong { display: block; font-weight: 700; margin-bottom: 0.2rem; }
+        .timeline-content span { font-size: 0.85rem; color: var(--text2); }
+
+        /* Packing list */
+        .pack-item {
+            display: flex; align-items: center; gap: 0.75rem;
+            padding: 0.6rem 0; border-bottom: 1px solid var(--border);
+            cursor: pointer;
+        }
+        .pack-item:last-child { border: none; }
+        .pack-check {
+            width: 20px; height: 20px; border-radius: 50%;
+            border: 2px solid var(--border); display: flex;
+            align-items: center; justify-content: center;
+            font-size: 0.7rem; color: transparent; flex-shrink: 0;
+            transition: all 0.2s; background: #fff;
+        }
+        .pack-item.checked .pack-check { background: var(--success); border-color: var(--success); color: #fff; }
+        .pack-item.checked .pack-text { text-decoration: line-through; color: var(--text3); }
+
+        /* Review / rating */
+        .stars { display: flex; gap: 0.25rem; }
+        .star { font-size: 1.2rem; cursor: pointer; color: #ddd; transition: color 0.15s; }
+        .star.active { color: var(--warning); }
+        .review-form textarea {
+            width: 100%; min-height: 90px; resize: vertical;
+            border: 1.5px solid var(--border); border-radius: var(--radius-sm);
+            padding: 0.75rem; font-family: 'Inter', sans-serif;
+            font-size: 0.9rem; color: var(--text); outline: none;
+            transition: border-color 0.2s;
+        }
+        .review-form textarea:focus { border-color: var(--primary); }
+        .review-submitted { text-align: center; padding: 2rem; }
+        .review-submitted i { font-size: 2.5rem; color: var(--success); margin-bottom: 0.5rem; }
+
+        /* Referral */
+        .referral-box {
+            background: var(--secondary-light); border-radius: var(--radius-sm);
+            padding: 1.25rem; text-align: center;
+        }
+        .referral-code {
+            font-size: 1.5rem; font-weight: 900; color: var(--secondary);
+            letter-spacing: 0.1em; margin: 0.5rem 0;
+        }
+        .copy-btn {
+            background: var(--secondary); color: #fff; border: none;
+            padding: 0.5rem 1.5rem; border-radius: 99px; cursor: pointer;
+            font-weight: 700; font-size: 0.85rem; transition: all 0.2s;
+        }
+        .copy-btn:hover { background: #6d28d9; transform: translateY(-1px); }
+
+        /* FAQ Accordion */
+        .faq-item { border-bottom: 1px solid var(--border); }
+        .faq-q {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 1rem 0; cursor: pointer; font-weight: 600;
+            font-size: 0.95rem; color: var(--text); user-select: none;
+        }
+        .faq-q i { transition: transform 0.3s; color: var(--primary); flex-shrink: 0; }
+        .faq-item.open .faq-q i { transform: rotate(180deg); }
+        .faq-a { max-height: 0; overflow: hidden; transition: max-height 0.35s ease, padding 0.35s; font-size: 0.9rem; color: var(--text2); line-height: 1.7; }
+        .faq-item.open .faq-a { max-height: 300px; padding-bottom: 1rem; }
+
+        /* Notification Toast */
+        #toast {
+            position: fixed; bottom: 2rem; right: 2rem; z-index: 9999;
+            background: var(--text); color: #fff;
+            padding: 0.85rem 1.5rem; border-radius: var(--radius-sm);
+            font-size: 0.9rem; font-weight: 600;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+            transform: translateY(100px); opacity: 0;
+            transition: all 0.3s ease;
+            display: flex; align-items: center; gap: 0.6rem;
+        }
+        #toast.show { transform: translateY(0); opacity: 1; }
+        #toast.success { background: var(--success); }
+        #toast.error { background: var(--danger); }
+
+        /* ========== MODAL ========== */
+        .modal-backdrop {
+            position: fixed; inset: 0; z-index: 200;
+            background: rgba(0,0,0,0.4); backdrop-filter: blur(4px);
+            display: flex; align-items: center; justify-content: center;
+            padding: 1rem;
+        }
+        .modal-box {
+            background: #fff; border-radius: var(--radius);
+            padding: 2rem; max-width: 480px; width: 100%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+            position: relative;
+        }
+        .modal-close {
+            position: absolute; top: 1rem; right: 1rem;
+            background: var(--bg2); border: none; border-radius: 50%;
+            width: 32px; height: 32px; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.85rem; color: var(--text2); transition: all 0.2s;
+        }
+        .modal-close:hover { background: var(--danger); color: #fff; }
+
+        /* ========== SECTION TABS ========== */
+        .section-tabs { display: flex; gap: 0.5rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
+        .section-tab {
+            padding: 0.5rem 1.25rem; border-radius: 99px; border: 1.5px solid var(--border);
+            background: #fff; cursor: pointer; font-weight: 600; font-size: 0.88rem;
+            color: var(--text2); transition: all 0.2s;
+        }
+        .section-tab.active, .section-tab:hover { background: var(--primary); border-color: var(--primary); color: #fff; }
+
+        /* Destination Explore */
+        .dest-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+        @media(max-width: 700px) { .dest-grid { grid-template-columns: 1fr 1fr; } }
+        .dest-card {
+            border-radius: var(--radius-sm); overflow: hidden;
+            border: 1.5px solid var(--border); cursor: pointer;
+            transition: all 0.2s;
+        }
+        .dest-card:hover { transform: translateY(-4px); box-shadow: 0 8px 24px var(--shadow); }
+        .dest-img {
+            height: 100px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 3rem;
+        }
+        .dest-info { padding: 0.75rem; background: #fff; }
+        .dest-info .dest-name { font-weight: 700; font-size: 0.9rem; }
+        .dest-info .dest-price { font-size: 0.8rem; color: var(--primary); font-weight: 600; }
+
+        /* ========== RESPONSIVE NAV ========== */
+        @media(max-width: 600px) {
+            .nav-tabs { display: none; }
+            .auth-hero h1 { font-size: 2.5rem; }
+        }
+
+        /* ========== ANIMATIONS ========== */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(24px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .fade-in { animation: fadeInUp 0.5s ease both; }
+        .delay-1 { animation-delay: 0.1s; }
+        .delay-2 { animation-delay: 0.2s; }
+        .delay-3 { animation-delay: 0.3s; }
+
+        /* shimmer loading */
+        .shimmer {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+            border-radius: 0.5rem;
+        }
+        @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
+    </style>
+</head>
+
+<body>
+
+<!-- Background Blobs -->
+<div class="blob-wrap">
+    <div class="blob blob-a"></div>
+    <div class="blob blob-b"></div>
+    <div class="blob blob-c"></div>
+</div>
+
+<!-- Toast notification -->
+<div id="toast"><i class="fa-solid fa-check-circle"></i><span id="toast-msg">Đã sao chép!</span></div>
+
+<!-- Navigation (hidden until logged in) -->
+<nav id="app-nav" class="hidden">
+    <div class="nav-inner">
+        <a class="nav-logo">Ẩn Trình</a>
+        <div class="nav-tabs">
+            <button class="nav-tab active" onclick="showDashSection('overview')" id="tab-overview">Tổng quan</button>
+            <button class="nav-tab" onclick="showDashSection('mytrips')" id="tab-mytrips">Chuyến của tôi</button>
+            <button class="nav-tab" onclick="showDashSection('explore')" id="tab-explore">Khám phá</button>
+            <button class="nav-tab" onclick="showDashSection('faq')" id="tab-faq">FAQ</button>
+        </div>
+        <div class="nav-user">
+            <div class="nav-avatar" id="user-avatar" title="Tài khoản">?</div>
+            <button class="btn btn-outline btn-sm" onclick="showScreen('screen-auth'); document.getElementById('app-nav').classList.add('hidden');">
+                <i class="fa-solid fa-right-from-bracket"></i>
+            </button>
+        </div>
+    </div>
+</nav>
+
+<!-- ============================================================ -->
+<!-- SCREEN 1: AUTH -->
+<!-- ============================================================ -->
+<div id="screen-auth" class="screen">
+    <div class="auth-container" style="margin:auto; position:relative; z-index:1;">
+        <div class="auth-hero fade-in">
+            <div style="display:inline-block; background:var(--primary-light); color:var(--primary-dark); padding:0.4rem 1.2rem; border-radius:99px; font-size:0.82rem; font-weight:700; margin-bottom:1.2rem;">
+                🌏 Du lịch mù #1 Việt Nam
+            </div>
+            <h1>Hành Trình<br>Bí Ẩn<br>Của Bạn</h1>
+            <p>Bạn chỉ cần cho biết ngân sách & tâm trạng. AI sẽ chọn điểm đến hoàn hảo – và bạn chỉ biết khi đến giờ khởi hành! 🎉</p>
+            <div class="feature-pills">
+                <span class="pill"><i class="fa-solid fa-robot"></i> AI Personalize</span>
+                <span class="pill"><i class="fa-solid fa-shield-halved"></i> Đảm bảo hoàn tiền</span>
+                <span class="pill"><i class="fa-solid fa-bolt"></i> Đặt trong 3 phút</span>
+                <span class="pill"><i class="fa-solid fa-map-location-dot"></i> 50+ điểm đến</span>
+            </div>
+        </div>
+        <div class="fade-in delay-2">
+            <div class="card auth-card">
+                <h2>Bắt đầu ngay!</h2>
+                <p class="subtitle">Tạo tài khoản miễn phí – không cần thẻ tín dụng</p>
+                <button class="social-btn" onclick="loginWithGoogle()">
+                    <svg width="20" height="20" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+                    Tiếp tục với Google
+                </button>
+                <div class="divider">hoặc</div>
+                <form id="auth-form">
+                    <div class="form-group">
+                        <label class="field-label">Email của bạn</label>
+                        <input type="email" id="email" required class="input-field" placeholder="bạn@email.com">
+                    </div>
+                    <div class="form-group">
+                        <label class="field-label">Tên hiển thị</label>
+                        <input type="text" id="username" required class="input-field" placeholder="Tên của bạn">
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block btn-lg" style="margin-top:0.5rem;">
+                        BẮT ĐẦU HÀNH TRÌNH <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </form>
+                <p style="text-align:center; font-size:0.78rem; color:var(--text2); margin-top:1.2rem;">
+                    Bằng cách tiếp tục, bạn đồng ý với <a href="#" style="color:var(--primary)">Điều khoản dịch vụ</a> của chúng tôi.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SCREEN 2: QUIZ -->
+<!-- ============================================================ -->
+<div id="screen-quiz" class="screen hidden">
+    <div class="quiz-wrap" style="margin:auto; position:relative; z-index:1;">
+        <!-- Step indicator -->
+        <div class="step-indicator fade-in">
+            <div class="step-dot active" id="sd-1">1</div>
+            <div class="step-line" id="sl-1"></div>
+            <div class="step-dot" id="sd-2">2</div>
+            <div class="step-line" id="sl-2"></div>
+            <div class="step-dot" id="sd-3">3</div>
+            <span style="font-size:0.82rem; color:var(--text2); font-weight:600; margin-left:0.5rem;">Bước 1: Giải mã bản thân</span>
+        </div>
+        <div class="card quiz-card fade-in delay-1">
+            <h2>Hãy cho chúng tôi biết về bạn!</h2>
+            <p class="q-label">Trả lời 4 câu hỏi nhanh để AI hiệu chỉnh chuyến đi hoàn hảo nhất.</p>
+            <div class="quiz-progress"><div class="quiz-progress-bar" id="quiz-progress-bar" style="width:0%"></div></div>
+
+            <!-- Q1 -->
+            <div class="quiz-question" id="q-block-1">
+                <p class="q-text">1. Trạng thái hiện tại của bạn?</p>
+                <div class="quiz-options">
+                    <button class="quiz-opt" data-q="1" data-v="healing">
+                        <span class="opt-icon">🧘</span>Chữa lành & Yên tĩnh
+                    </button>
+                    <button class="quiz-opt" data-q="1" data-v="explore">
+                        <span class="opt-icon">🎉</span>Sôi động & Khám phá
+                    </button>
+                </div>
+            </div>
+
+            <!-- Q2 -->
+            <div class="quiz-question" id="q-block-2">
+                <p class="q-text">2. Không gian lý tưởng?</p>
+                <div class="quiz-options">
+                    <button class="quiz-opt" data-q="2" data-v="nature">
+                        <span class="opt-icon">🏔️</span>Thiên nhiên hoang sơ
+                    </button>
+                    <button class="quiz-opt" data-q="2" data-v="city">
+                        <span class="opt-icon">🏙️</span>Thành phố hiện đại
+                    </button>
+                </div>
+            </div>
+
+            <!-- Q3 -->
+            <div class="quiz-question" id="q-block-3">
+                <p class="q-text">3. Bạn thích đi cùng ai?</p>
+                <div class="quiz-options">
+                    <button class="quiz-opt" data-q="3" data-v="solo">
+                        <span class="opt-icon">🧍</span>Một mình
+                    </button>
+                    <button class="quiz-opt" data-q="3" data-v="couple">
+                        <span class="opt-icon">💑</span>Cặp đôi
+                    </button>
+                    <button class="quiz-opt" data-q="3" data-v="friends">
+                        <span class="opt-icon">👫</span>Nhóm bạn
+                    </button>
+                    <button class="quiz-opt" data-q="3" data-v="family">
+                        <span class="opt-icon">👨‍👩‍👧</span>Gia đình
+                    </button>
+                </div>
+            </div>
+
+            <!-- Q4 -->
+            <div class="quiz-question" id="q-block-4">
+                <p class="q-text">4. Ưu tiên hoạt động?</p>
+                <div class="quiz-options">
+                    <button class="quiz-opt" data-q="4" data-v="food">
+                        <span class="opt-icon">🍜</span>Ẩm thực & Văn hóa
+                    </button>
+                    <button class="quiz-opt" data-q="4" data-v="adventure">
+                        <span class="opt-icon">🏄</span>Mạo hiểm & Thể thao
+                    </button>
+                    <button class="quiz-opt" data-q="4" data-v="relax">
+                        <span class="opt-icon">🌅</span>Nghỉ ngơi & Spa
+                    </button>
+                    <button class="quiz-opt" data-q="4" data-v="photo">
+                        <span class="opt-icon">📸</span>Chụp ảnh & Sống ảo
+                    </button>
+                </div>
+            </div>
+
+            <button id="next-to-setup" class="btn btn-primary btn-block btn-lg hidden" style="margin-top:1rem;">
+                TIẾP TỤC <i class="fa-solid fa-arrow-right"></i>
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SCREEN 3: SETUP -->
+<!-- ============================================================ -->
+<div id="screen-setup" class="screen hidden">
+    <div class="setup-wrap" style="margin:auto; position:relative; z-index:1;">
+        <div class="step-indicator fade-in">
+            <div class="step-dot done" id="sd2-1"><i class="fa-solid fa-check" style="font-size:0.7rem"></i></div>
+            <div class="step-line done"></div>
+            <div class="step-dot active" id="sd2-2">2</div>
+            <div class="step-line"></div>
+            <div class="step-dot" id="sd2-3">3</div>
+            <span style="font-size:0.82rem; color:var(--text2); font-weight:600; margin-left:0.5rem;">Bước 2: Cấu hình chuyến đi</span>
+        </div>
+        <div class="card setup-card fade-in delay-1">
+            <h2 style="font-size:1.6rem; font-weight:800; margin-bottom:0.5rem;">Cấu hình chuyến đi</h2>
+            <p style="color:var(--text2); margin-bottom:1.5rem;">Cho chúng tôi biết thêm để AI tối ưu hành trình.</p>
+
+            <div class="form-group">
+                <label class="field-label">💰 Ngân sách tổng (VNĐ)</label>
+                <input type="range" id="budget" min="3000000" max="30000000" step="500000" value="5000000"
+                    class="budget-slider" style="width:100%">
+                <p class="budget-display" id="budget-display">5,000,000 đ</p>
+            </div>
+
+            <div class="grid-2">
+                <div class="form-group">
+                    <label class="field-label">📅 Số ngày</label>
+                    <input type="number" id="days" value="3" min="1" max="14" class="input-field">
+                </div>
+                <div class="form-group">
+                    <label class="field-label">🗓️ Ngày xuất phát</label>
+                    <input type="date" id="date" class="input-field">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="field-label">🚫 Nơi KHÔNG muốn đến (Blacklist)</label>
+                <input type="text" id="blacklist" placeholder="VD: Hà Nội, Vũng Tàu..." class="input-field">
+            </div>
+
+            <div class="form-group">
+                <label class="field-label">✈️ Sở thích lưu trú</label>
+                <div class="tag-cloud" id="lodging-tags">
+                    <span class="tag" data-val="hostel">Hostel</span>
+                    <span class="tag" data-val="hotel3">Khách sạn 3★</span>
+                    <span class="tag" data-val="hotel5">Khách sạn 5★</span>
+                    <span class="tag" data-val="resort">Resort</span>
+                    <span class="tag" data-val="airbnb">Airbnb</span>
+                    <span class="tag" data-val="camping">Camping</span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="field-label">🍽️ Chế độ ăn đặc biệt</label>
+                <div class="tag-cloud" id="diet-tags">
+                    <span class="tag" data-val="none">Không yêu cầu</span>
+                    <span class="tag" data-val="vegan">Thuần chay</span>
+                    <span class="tag" data-val="halal">Halal</span>
+                    <span class="tag" data-val="seafood">Hải sản</span>
+                </div>
+            </div>
+
+            <hr class="section-divider">
+
+            <!-- Summary -->
+            <div style="background:var(--bg2); border-radius:var(--radius-sm); padding:1.25rem; margin-bottom:1.25rem;">
+                <p style="font-weight:700; margin-bottom:0.75rem;">📋 Tóm tắt chuyến đi của bạn</p>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.5rem; font-size:0.88rem;">
+                    <span>Phong cách:</span><strong id="sum-persona">–</strong>
+                    <span>Ngân sách:</span><strong id="sum-budget">5,000,000 đ</strong>
+                    <span>Thời gian:</span><strong id="sum-days">3 ngày</strong>
+                    <span>Ngày đi:</span><strong id="sum-date">–</strong>
+                </div>
+            </div>
+
+            <button id="submit-trip" class="btn btn-success btn-block btn-lg">
+                <i class="fa-solid fa-lock"></i> THANH TOÁN & KHÓA LỊCH TRÌNH
+            </button>
+            <p style="text-align:center; font-size:0.78rem; color:var(--text2); margin-top:0.75rem;">
+                🔒 Bảo mật SSL · Hoàn tiền 100% nếu không hài lòng
+            </p>
+        </div>
+    </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SCREEN 4: WAITING LOUNGE -->
+<!-- ============================================================ -->
+<div id="screen-waiting" class="screen hidden">
+    <div class="waiting-wrap" style="margin:auto; position:relative; z-index:1; padding-top:6rem;">
+        <div class="card waiting-card fade-in">
+            <span class="plane-anim">✈️</span>
+            <h2 style="font-size:1.8rem; font-weight:800; margin-bottom:0.5rem;">Đặt chỗ thành công!</h2>
+            <p style="color:var(--text2); margin-bottom:1rem;">AI đang phân tích & chuẩn bị hành trình bí ẩn cho bạn...</p>
+
+            <div class="countdown-box">
+                <p class="countdown-label">⏳ Điểm đến sẽ được tiết lộ sau</p>
+                <div class="countdown-time" id="countdown">48:00:00</div>
+                <p style="font-size:0.8rem; opacity:0.75; margin-top:0.5rem;">Mỗi giây trôi qua là một bước gần hơn đến cuộc phiêu lưu!</p>
+            </div>
+
+            <div class="info-row">
+                <span class="icon">☀️</span>
+                <div>
+                    <p class="info-label">Thời tiết điểm đến (gợi ý)</p>
+                    <p class="info-val" id="weather-hint">24°C – Nắng nhẹ, gió mát</p>
+                </div>
+            </div>
+            <div class="info-row">
+                <span class="icon">🧳</span>
+                <div>
+                    <p class="info-label">Gợi ý chuẩn bị hành lý</p>
+                    <p class="info-val">Quần áo thoáng mát, kem chống nắng</p>
+                </div>
+            </div>
+            <div class="info-row">
+                <span class="icon">📍</span>
+                <div>
+                    <p class="info-label">Loại điểm đến (gợi ý)</p>
+                    <p class="info-val" id="dest-hint">Biển hoặc núi – bạn sẽ sớm biết!</p>
+                </div>
+            </div>
+
+            <div class="hint-chips">
+                <span class="hint-chip">🌊 Gần biển</span>
+                <span class="hint-chip">🏛️ Di sản văn hóa</span>
+                <span class="hint-chip">🍤 Ẩm thực phong phú</span>
+            </div>
+
+            <button class="btn btn-primary btn-block" style="margin-top:1.5rem;" onclick="goToDashboard()">
+                <i class="fa-solid fa-gauge"></i> Vào Dashboard của tôi
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SCREEN 5: DASHBOARD -->
+<!-- ============================================================ -->
+<div id="screen-dashboard" class="screen hidden">
+    <div class="dash-container">
+
+        <!-- SECTION: OVERVIEW -->
+        <div id="dash-overview">
+            <div class="dash-header fade-in">
+                <h2>Xin chào, <span id="dash-username">Bạn ơi</span>! 👋</h2>
+                <p>Quản lý toàn bộ hành trình bí ẩn của bạn tại đây.</p>
+            </div>
+
+            <!-- Stats -->
+            <div class="stat-grid fade-in">
+                <div class="stat-card">
+                    <div class="stat-icon">✈️</div>
+                    <div class="stat-num" id="stat-trips">1</div>
+                    <div class="stat-label">Chuyến đã đặt</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">🌍</div>
+                    <div class="stat-num" id="stat-dest">?</div>
+                    <div class="stat-label">Điểm đến</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">⭐</div>
+                    <div class="stat-num" id="stat-points">250</div>
+                    <div class="stat-label">Điểm thưởng</div>
+                </div>
+            </div>
+
+            <div class="dash-grid">
+                <!-- LEFT COLUMN -->
+                <div>
+                    <!-- Active Trip -->
+                    <div class="card dash-card fade-in delay-1">
+                        <h3><i class="fa-solid fa-suitcase-rolling"></i> Chuyến đi đang chờ</h3>
+                        <div class="reveal-card" id="active-trip-card">
+                            <h3>🎉 Điểm đến bí ẩn của bạn</h3>
+                            <div class="reveal-name" id="trip-dest-name">???</div>
+                            <p class="reveal-sub" id="trip-countdown-sub">Sẽ tiết lộ sau <strong id="trip-hrs">48</strong> giờ</p>
+                            <button class="btn" style="background:rgba(255,255,255,0.25); color:#fff; backdrop-filter:blur(8px);" onclick="revealDestination()">
+                                <i class="fa-solid fa-eye"></i> Xem trước (Demo)
+                            </button>
+                        </div>
+
+                        <div class="info-row" style="margin-top:0.75rem;">
+                            <span class="icon">📅</span>
+                            <div>
+                                <p class="info-label">Ngày xuất phát</p>
+                                <p class="info-val" id="trip-date-disp">–</p>
+                            </div>
+                        </div>
+                        <div class="info-row">
+                            <span class="icon">💰</span>
+                            <div>
+                                <p class="info-label">Ngân sách đã khóa</p>
+                                <p class="info-val" id="trip-budget-disp">–</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Itinerary timeline -->
+                    <div class="card dash-card fade-in delay-2">
+                        <h3><i class="fa-solid fa-route"></i> Lịch trình gợi ý</h3>
+                        <p style="font-size:0.85rem; color:var(--text2); margin-bottom:1rem;">Lịch trình chi tiết sẽ hiện sau khi điểm đến được tiết lộ.</p>
+                        <div class="timeline">
+                            <div class="timeline-item">
+                                <div class="timeline-time">Ngày 1 – Sáng</div>
+                                <div class="timeline-content">
+                                    <strong>Đến sân bay / Ga / Bến xe</strong>
+                                    <span>Check-in khách sạn, tham quan quanh khu lưu trú.</span>
+                                </div>
+                            </div>
+                            <div class="timeline-item">
+                                <div class="timeline-time">Ngày 1 – Chiều</div>
+                                <div class="timeline-content">
+                                    <strong>Khám phá điểm đến đầu tiên 🗺️</strong>
+                                    <span>Hoạt động được cá nhân hóa theo phong cách của bạn.</span>
+                                </div>
+                            </div>
+                            <div class="timeline-item">
+                                <div class="timeline-time">Ngày 1 – Tối</div>
+                                <div class="timeline-content">
+                                    <strong>Ẩm thực địa phương 🍜</strong>
+                                    <span>Thưởng thức những món đặc sản vùng miền.</span>
+                                </div>
+                            </div>
+                            <div class="timeline-item">
+                                <div class="timeline-time">Ngày 2+</div>
+                                <div class="timeline-content">
+                                    <strong>🔒 Sẽ tiết lộ sau khi điểm đến mở khóa</strong>
+                                    <span>Hành trình cụ thể đang được AI chuẩn bị...</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- RIGHT COLUMN -->
+                <div>
+                    <!-- Weather widget -->
+                    <div class="weather-widget fade-in delay-1">
+                        <h4>🌤️ Thời tiết điểm đến (gợi ý)</h4>
+                        <div class="weather-main">
+                            <div class="weather-temp" id="weather-temp">24°C</div>
+                            <div>
+                                <div style="font-size:1.2rem; font-weight:700;" id="weather-status">Nắng nhẹ</div>
+                                <div class="weather-desc" id="weather-loc">Điểm đến bí ẩn</div>
+                            </div>
+                            <span style="font-size:2.5rem; margin-left:auto;" id="weather-icon">☀️</span>
+                        </div>
+                        <div style="display:flex; gap:1rem; margin-top:1rem; font-size:0.82rem; opacity:0.85;">
+                            <span>💧 Độ ẩm: 72%</span>
+                            <span>💨 Gió: 15 km/h</span>
+                            <span>🌞 UV: Trung bình</span>
+                        </div>
+                        <p class="weather-hint">Phù hợp để đi dạo và chụp ảnh ngoài trời!</p>
+                    </div>
+
+                    <!-- Packing list -->
+                    <div class="card dash-card fade-in delay-2">
+                        <h3><i class="fa-solid fa-bag-shopping"></i> Checklist hành lý</h3>
+                        <div id="pack-list">
+                            <div class="pack-item" onclick="togglePack(this)">
+                                <div class="pack-check"><i class="fa-solid fa-check"></i></div>
+                                <span class="pack-text">Hộ chiếu / CMND</span>
+                            </div>
+                            <div class="pack-item" onclick="togglePack(this)">
+                                <div class="pack-check"><i class="fa-solid fa-check"></i></div>
+                                <span class="pack-text">Kem chống nắng SPF50+</span>
+                            </div>
+                            <div class="pack-item" onclick="togglePack(this)">
+                                <div class="pack-check"><i class="fa-solid fa-check"></i></div>
+                                <span class="pack-text">Quần áo thoáng mát (3-5 bộ)</span>
+                            </div>
+                            <div class="pack-item" onclick="togglePack(this)">
+                                <div class="pack-check"><i class="fa-solid fa-check"></i></div>
+                                <span class="pack-text">Giày thể thao / đi biển</span>
+                            </div>
+                            <div class="pack-item" onclick="togglePack(this)">
+                                <div class="pack-check"><i class="fa-solid fa-check"></i></div>
+                                <span class="pack-text">Sạc dự phòng</span>
+                            </div>
+                            <div class="pack-item" onclick="togglePack(this)">
+                                <div class="pack-check"><i class="fa-solid fa-check"></i></div>
+                                <span class="pack-text">Thuốc cá nhân / say xe</span>
+                            </div>
+                            <div class="pack-item" onclick="togglePack(this)">
+                                <div class="pack-check"><i class="fa-solid fa-check"></i></div>
+                                <span class="pack-text">Camera / điện thoại đã sạc</span>
+                            </div>
+                        </div>
+                        <button class="btn btn-outline btn-sm" style="margin-top:1rem;" onclick="resetPack()">
+                            <i class="fa-solid fa-rotate-left"></i> Đặt lại
+                        </button>
+                    </div>
+
+                    <!-- Referral -->
+                    <div class="card dash-card fade-in delay-3">
+                        <h3><i class="fa-solid fa-gift"></i> Chia sẻ & nhận thưởng</h3>
+                        <p style="font-size:0.85rem; color:var(--text2); margin-bottom:1rem;">Mời bạn bè – cả hai cùng được <strong style="color:var(--primary)">200.000đ</strong> giảm giá!</p>
+                        <div class="referral-box">
+                            <p style="font-size:0.82rem; color:var(--text2);">Mã giới thiệu của bạn</p>
+                            <div class="referral-code" id="ref-code">ANTRINH2026</div>
+                            <button class="copy-btn" onclick="copyReferral()">
+                                <i class="fa-solid fa-copy"></i> Sao chép
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECTION: MY TRIPS -->
+        <div id="dash-mytrips" class="hidden">
+            <div class="dash-header fade-in">
+                <h2>Chuyến đi của tôi ✈️</h2>
+                <p>Xem lại lịch sử & trạng thái các booking.</p>
+            </div>
+            <div class="section-tabs">
+                <button class="section-tab active" onclick="filterTrips('all', this)">Tất cả</button>
+                <button class="section-tab" onclick="filterTrips('waiting', this)">Đang chờ</button>
+                <button class="section-tab" onclick="filterTrips('revealed', this)">Đã tiết lộ</button>
+                <button class="section-tab" onclick="filterTrips('completed', this)">Hoàn thành</button>
+            </div>
+            <div class="card" style="padding:1.5rem;" id="trips-list">
+                <!-- injected by JS -->
+            </div>
+            <div style="margin-top:1rem;">
+                <button class="btn btn-primary" onclick="showScreen('screen-quiz'); document.getElementById('app-nav').classList.add('hidden');">
+                    <i class="fa-solid fa-plus"></i> Đặt chuyến mới
+                </button>
+            </div>
+        </div>
+
+        <!-- SECTION: EXPLORE -->
+        <div id="dash-explore" class="hidden">
+            <div class="dash-header fade-in">
+                <h2>Khám phá điểm đến 🗺️</h2>
+                <p>Gợi ý những điểm đến phổ biến – không tiết lộ bạn sẽ đến đâu nhé!</p>
+            </div>
+            <div class="card" style="padding:1.5rem;" id="explore-content">
+                <div style="display:flex; gap:1rem; margin-bottom:1rem; flex-wrap:wrap;">
+                    <input type="text" placeholder="🔍 Tìm điểm đến..." class="input-field" style="max-width:300px;" oninput="filterDest(this.value)">
+                    <select class="input-field" style="max-width:180px;" onchange="filterDestType(this.value)">
+                        <option value="all">Tất cả loại</option>
+                        <option value="beach">Biển</option>
+                        <option value="mountain">Núi</option>
+                        <option value="city">Thành phố</option>
+                        <option value="heritage">Di sản</option>
+                    </select>
+                </div>
+                <div class="dest-grid" id="dest-grid">
+                    <!-- injected by JS -->
+                </div>
+            </div>
+        </div>
+
+        <!-- SECTION: FAQ -->
+        <div id="dash-faq" class="hidden">
+            <div class="dash-header fade-in">
+                <h2>Câu hỏi thường gặp ❓</h2>
+                <p>Những điều bạn cần biết về Ẩn Trình.</p>
+            </div>
+            <div class="card" style="padding:1.5rem;">
+                <div id="faq-list">
+                    <!-- injected by JS -->
+                </div>
+            </div>
+            <div class="card" style="padding:1.5rem; margin-top:1.5rem;">
+                <h3 style="font-size:1.1rem; font-weight:700; margin-bottom:1rem;"><i class="fa-solid fa-star" style="color:var(--warning)"></i> Đánh giá chuyến đi của bạn</h3>
+                <div id="review-section">
+                    <div class="stars" id="star-rating">
+                        <span class="star" data-val="1" onclick="rateStar(1)">★</span>
+                        <span class="star" data-val="2" onclick="rateStar(2)">★</span>
+                        <span class="star" data-val="3" onclick="rateStar(3)">★</span>
+                        <span class="star" data-val="4" onclick="rateStar(4)">★</span>
+                        <span class="star" data-val="5" onclick="rateStar(5)">★</span>
+                    </div>
+                    <div class="review-form" style="margin-top:1rem;">
+                        <textarea placeholder="Chia sẻ cảm nhận của bạn về dịch vụ Ẩn Trình..."></textarea>
+                        <button class="btn btn-primary" style="margin-top:0.75rem;" onclick="submitReview()">
+                            <i class="fa-solid fa-paper-plane"></i> Gửi đánh giá
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- Reveal modal -->
+<div id="modal-reveal" class="modal-backdrop hidden">
+    <div class="modal-box">
+        <button class="modal-close" onclick="document.getElementById('modal-reveal').classList.add('hidden')">✕</button>
+        <div style="text-align:center; padding:1rem 0;">
+            <div style="font-size:4rem; margin-bottom:1rem;" id="modal-dest-emoji">🏖️</div>
+            <h2 style="font-size:1.8rem; font-weight:900; color:var(--primary); margin-bottom:0.5rem;" id="modal-dest-name">ĐÀ NẴNG</h2>
+            <p style="color:var(--text2); margin-bottom:1.5rem;" id="modal-dest-desc">Thành phố đáng sống – biển xanh, cầu Rồng và ẩm thực tuyệt vời!</p>
+            <div style="display:flex; gap:0.75rem; flex-wrap:wrap; justify-content:center; margin-bottom:1.5rem;" id="modal-dest-tags"></div>
+            <button class="btn btn-primary btn-block" onclick="document.getElementById('modal-reveal').classList.add('hidden');">
+                <i class="fa-solid fa-check"></i> Tuyệt vời, tôi đã hiểu!
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- JAVASCRIPT -->
+<!-- ============================================================ -->
+<script>
+// ===== FIREBASE CONFIG (demo – thay bằng config thật) =====
+const firebaseConfig = {
+    apiKey: "AIzaSy_YOUR_API_KEY",
+    authDomain: "antrinh-app.firebaseapp.com",
+    projectId: "antrinh-app",
+    storageBucket: "antrinh-app.appspot.com",
+    messagingSenderId: "123456789",
+    appId: "1:123456789:web:abcdef"
+};
+
+let db = null;
+try {
+    firebase.initializeApp(firebaseConfig);
+    db = firebase.firestore();
+} catch(e) { console.warn('Firebase init skipped (demo mode)'); }
+
+// ===== STATE =====
+let state = {
+    userEmail: '',
+    userName: '',
+    persona: {},
+    budget: 5000000,
+    days: 3,
+    date: '',
+    blacklist: '',
+    lodging: [],
+    diet: [],
+    currentRating: 0,
+    trips: [
+        { id: 'T001', status: 'waiting', emoji: '❓', dest: '???', date: '2026-11-15', budget: '5,000,000 đ', days: 3 },
+        { id: 'T002', status: 'completed', emoji: '🏖️', dest: 'Đà Nẵng', date: '2026-08-20', budget: '8,000,000 đ', days: 4 },
+        { id: 'T003', status: 'revealed', emoji: '🏔️', dest: 'Sapa', date: '2026-09-05', budget: '6,000,000 đ', days: 3 },
+    ],
+    allDestinations: [
+        { emoji:'🏖️', name:'Đà Nẵng', price:'Từ 3.5tr', type:'beach', color:'#dbeafe' },
+        { emoji:'🏔️', name:'Sapa', price:'Từ 2.8tr', type:'mountain', color:'#dcfce7' },
+        { emoji:'🌊', name:'Phú Quốc', price:'Từ 5tr', type:'beach', color:'#cffafe' },
+        { emoji:'🏛️', name:'Hội An', price:'Từ 3tr', type:'heritage', color:'#fef3c7' },
+        { emoji:'🌆', name:'TP. Hồ Chí Minh', price:'Từ 2tr', type:'city', color:'#fce7f3' },
+        { emoji:'🏯', name:'Huế', price:'Từ 2.5tr', type:'heritage', color:'#ede9fe' },
+        { emoji:'🌴', name:'Nha Trang', price:'Từ 4tr', type:'beach', color:'#d1fae5' },
+        { emoji:'🗻', name:'Đà Lạt', price:'Từ 3tr', type:'mountain', color:'#fce7f3' },
+        { emoji:'🏙️', name:'Hà Nội', price:'Từ 2tr', type:'city', color:'#fef9c3' },
+    ],
+    faqs: [
+        { q: 'Ẩn Trình hoạt động như thế nào?', a: 'Bạn cung cấp ngân sách, phong cách du lịch và ngày đi. AI của chúng tôi sẽ chọn điểm đến tốt nhất phù hợp với bạn. Điểm đến sẽ được tiết lộ 48 giờ trước khi khởi hành!' },
+        { q: 'Tôi có thể hoàn tiền không?', a: 'Có! Chúng tôi đảm bảo hoàn tiền 100% nếu bạn hủy trước 72 giờ. Sau đó áp dụng chính sách hoàn tiền 50%.' },
+        { q: 'AI chọn điểm đến dựa trên gì?', a: 'AI phân tích phong cách du lịch, ngân sách, lịch trình, blacklist và tình trạng vé/phòng thực tế để tối ưu trải nghiệm cá nhân hóa.' },
+        { q: 'Tôi có thể biết trước điểm đến không?', a: 'Không – đó là bí mật! Nhưng bạn sẽ nhận được các gợi ý về thời tiết, loại hành lý cần chuẩn bị để không bị bỡ ngỡ.' },
+        { q: 'Giao thông và khách sạn có được bao gồm không?', a: 'Có! Gói của chúng tôi bao gồm vé máy bay/tàu/xe, khách sạn và một số hoạt động. Chi tiết sẽ được gửi sau khi điểm đến được tiết lộ.' },
+        { q: 'Tôi có thể đặt cho nhóm không?', a: 'Hoàn toàn được! Ẩn Trình hỗ trợ booking từ 1–20 người. Liên hệ hỗ trợ để được tư vấn gói nhóm.' },
+    ],
+    revealedDests: [
+        { emoji:'🏖️', name:'Đà Nẵng', desc:'Thành phố đáng sống – biển xanh, cầu Rồng và ẩm thực tuyệt vời!', tags:['Biển','Ẩm thực','Cầu Rồng','Non Nước'] },
+        { emoji:'🏔️', name:'Sapa', desc:'Ruộng bậc thang kỳ vĩ, văn hóa H\'Mông và không khí se lạnh thơ mộng.', tags:['Núi','Trekking','Văn hóa','Fansipan'] },
+        { emoji:'🌴', name:'Phú Quốc', desc:'Đảo ngọc với bãi biển cát trắng, lặn san hô và sunset tuyệt đẹp.', tags:['Đảo','Lặn biển','Resort','Hoàng hôn'] },
+    ]
+};
+
+// ===== SCREEN MANAGEMENT =====
+function showScreen(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
+    document.getElementById(id).classList.remove('hidden');
+    window.scrollTo(0, 0);
+}
+
+// ===== TOAST =====
+function showToast(msg, type='') {
+    const t = document.getElementById('toast');
+    document.getElementById('toast-msg').textContent = msg;
+    t.className = 'show ' + type;
+    setTimeout(() => t.classList.remove('show', type), 3000);
+}
+
+// ===== AUTH =====
+function loginWithGoogle() {
+    showToast('Tính năng Google đang phát triển – dùng email để demo!', '');
+}
+
+document.getElementById('auth-form').addEventListener('submit', (e) => {
+    e.preventDefault();
+    state.userEmail = document.getElementById('email').value;
+    state.userName = document.getElementById('username').value || 'Khách';
+    showScreen('screen-quiz');
+    document.getElementById('app-nav').classList.add('hidden');
+});
+
+// ===== QUIZ =====
+const personaMap = { healing:'Chữa lành', explore:'Khám phá', nature:'Thiên nhiên', city:'Đô thị', solo:'Solo', couple:'Cặp đôi', friends:'Nhóm bạn', family:'Gia đình', food:'Ẩm thực', adventure:'Mạo hiểm', relax:'Nghỉ ngơi', photo:'Chụp ảnh' };
+
+document.querySelectorAll('.quiz-opt').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+        const b = e.currentTarget;
+        const q = b.getAttribute('data-q');
+        const v = b.getAttribute('data-v');
+        state.persona[`q${q}`] = v;
+        document.querySelectorAll(`.quiz-opt[data-q="${q}"]`).forEach(x => x.classList.remove('selected'));
+        b.classList.add('selected');
+        const answered = Object.keys(state.persona).length;
+        document.getElementById('quiz-progress-bar').style.width = (answered / 4 * 100) + '%';
+        if (answered >= 4) {
+            document.getElementById('next-to-setup').classList.remove('hidden');
+        }
+    });
+});
+
+document.getElementById('next-to-setup').addEventListener('click', () => {
+    showScreen('screen-setup');
+    updateSummary();
+});
+
+// ===== SETUP =====
+document.getElementById('budget').addEventListener('input', (e) => {
+    state.budget = parseInt(e.target.value);
+    const disp = state.budget.toLocaleString('vi-VN') + ' đ';
+    document.getElementById('budget-display').textContent = disp;
+    document.getElementById('sum-budget').textContent = disp;
+});
+document.getElementById('days').addEventListener('input', (e) => {
+    state.days = e.target.value;
+    document.getElementById('sum-days').textContent = state.days + ' ngày';
+});
+document.getElementById('date').addEventListener('change', (e) => {
+    state.date = e.target.value;
+    document.getElementById('sum-date').textContent = formatDate(state.date) || '–';
+});
+
+// Tag selection
+document.querySelectorAll('#lodging-tags .tag').forEach(t => {
+    t.addEventListener('click', () => { t.classList.toggle('selected'); });
+});
+document.querySelectorAll('#diet-tags .tag').forEach(t => {
+    t.addEventListener('click', () => {
+        document.querySelectorAll('#diet-tags .tag').forEach(x => x.classList.remove('selected'));
+        t.classList.add('selected');
+    });
+});
+
+function updateSummary() {
+    const p = state.persona;
+    const parts = [p.q1, p.q2, p.q3, p.q4].map(v => personaMap[v] || '').filter(Boolean);
+    document.getElementById('sum-persona').textContent = parts.join(', ') || '–';
+}
+
+function formatDate(d) {
+    if (!d) return '–';
+    const [y, m, day] = d.split('-');
+    return `${day}/${m}/${y}`;
+}
+
+// ===== SUBMIT =====
+document.getElementById('submit-trip').addEventListener('click', async () => {
+    const btn = document.getElementById('submit-trip');
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang xử lý...';
+    btn.disabled = true;
+
+    const tripData = {
+        email: state.userEmail,
+        name: state.userName,
+        persona: state.persona,
+        budget: state.budget,
+        days: state.days,
+        date: state.date,
+        blacklist: document.getElementById('blacklist').value,
+        status: 'waiting_for_ai_match',
+        createdAt: new Date().toISOString()
+    };
+
+    if (db) {
+        try { await db.collection('bookings').add(tripData); } catch(e) { console.warn('Firestore skip'); }
+    }
+
+    state.date = document.getElementById('date').value;
+    state.budget = parseInt(document.getElementById('budget').value);
+    showScreen('screen-waiting');
+    startCountdown(48 * 3600);
+    document.getElementById('app-nav').classList.remove('hidden');
+    setTimeout(() => {
+        btn.innerHTML = '<i class="fa-solid fa-lock"></i> THANH TOÁN & KHÓA LỊCH TRÌNH';
+        btn.disabled = false;
+    }, 1000);
+});
+
+// ===== COUNTDOWN =====
+let cdInterval = null;
+function startCountdown(totalSeconds) {
+    clearInterval(cdInterval);
+    let remaining = totalSeconds;
+    function tick() {
+        const h = Math.floor(remaining / 3600);
+        const m = Math.floor((remaining % 3600) / 60);
+        const s = remaining % 60;
+        const str = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+        const cdEl = document.getElementById('countdown');
+        if (cdEl) cdEl.textContent = str;
+        if (remaining > 0) remaining--;
+        else clearInterval(cdInterval);
+    }
+    tick();
+    cdInterval = setInterval(tick, 1000);
+}
+
+// ===== GO TO DASHBOARD =====
+function goToDashboard() {
+    showScreen('screen-dashboard');
+    document.getElementById('app-nav').classList.remove('hidden');
+    initDashboard();
+}
+
+function initDashboard() {
+    document.getElementById('dash-username').textContent = state.userName || 'Bạn ơi';
+    const av = document.getElementById('user-avatar');
+    av.textContent = (state.userName || 'A')[0].toUpperCase();
+    document.getElementById('trip-date-disp').textContent = formatDate(state.date) || 'Chưa chọn';
+    document.getElementById('trip-budget-disp').textContent = state.budget.toLocaleString('vi-VN') + ' đ';
+    document.getElementById('sum-budget').textContent = state.budget.toLocaleString('vi-VN') + ' đ';
+    renderTrips();
+    renderDestGrid(state.allDestinations);
+    renderFAQ();
+    animateWeather();
+    startCountdown(48 * 3600);
+}
+
+// ===== DASH SECTION TABS =====
+function showDashSection(section) {
+    ['overview', 'mytrips', 'explore', 'faq'].forEach(s => {
+        document.getElementById('dash-' + s).classList.add('hidden');
+        document.getElementById('tab-' + s)?.classList.remove('active');
+    });
+    document.getElementById('dash-' + section).classList.remove('hidden');
+    document.getElementById('tab-' + section)?.classList.add('active');
+}
+
+// ===== TRIPS LIST =====
+function renderTrips(filter = 'all') {
+    const list = document.getElementById('trips-list');
+    const trips = filter === 'all' ? state.trips : state.trips.filter(t => t.status === filter);
+    list.innerHTML = trips.map(t => `
+        <div class="booking-item" onclick="openTripDetail('${t.id}')">
+            <div class="booking-thumb">${t.emoji}</div>
+            <div class="booking-info">
+                <div class="booking-name">${t.status === 'waiting' ? '🔒 Điểm đến bí ẩn' : t.dest}</div>
+                <div class="booking-meta">${formatDate(t.date)} · ${t.days} ngày · ${t.budget}</div>
+            </div>
+            <span class="badge badge-${t.status}">${{ waiting:'Đang chờ', revealed:'Đã tiết lộ', completed:'Hoàn thành', cancelled:'Đã hủy' }[t.status]}</span>
+        </div>
+    `).join('') || '<p style="color:var(--text2); text-align:center; padding:2rem;">Không có chuyến nào.</p>';
+}
+
+function filterTrips(filter, btn) {
+    document.querySelectorAll('.section-tab').forEach(t => t.classList.remove('active'));
+    btn.classList.add('active');
+    renderTrips(filter);
+}
+
+function openTripDetail(id) {
+    showToast('Tính năng xem chi tiết chuyến đang phát triển!');
+}
+
+// ===== DESTINATIONS GRID =====
+function renderDestGrid(dests) {
+    const grid = document.getElementById('dest-grid');
+    if (!grid) return;
+    grid.innerHTML = dests.map(d => `
+        <div class="dest-card" onclick="showToast('${d.name} – ${d.price}')">
+            <div class="dest-img" style="background:${d.color}">${d.emoji}</div>
+            <div class="dest-info">
+                <div class="dest-name">${d.name}</div>
+                <div class="dest-price">${d.price}</div>
+            </div>
+        </div>
+    `).join('');
+}
+
+function filterDest(query) {
+    const q = query.toLowerCase();
+    renderDestGrid(state.allDestinations.filter(d => d.name.toLowerCase().includes(q)));
+}
+
+function filterDestType(type) {
+    renderDestGrid(type === 'all' ? state.allDestinations : state.allDestinations.filter(d => d.type === type));
+}
+
+// ===== REVEAL DESTINATION =====
+function revealDestination() {
+    const dest = state.revealedDests[Math.floor(Math.random() * state.revealedDests.length)];
+    document.getElementById('modal-dest-emoji').textContent = dest.emoji;
+    document.getElementById('modal-dest-name').textContent = dest.name;
+    document.getElementById('modal-dest-desc').textContent = dest.desc;
+    document.getElementById('modal-dest-tags').innerHTML = dest.tags.map(tag =>
+        `<span style="background:var(--primary-light); color:var(--primary-dark); padding:0.3rem 0.9rem; border-radius:99px; font-size:0.82rem; font-weight:600;">${tag}</span>`
+    ).join('');
+    document.getElementById('trip-dest-name').textContent = dest.name;
+    document.getElementById('trip-countdown-sub').innerHTML = `<strong style="font-size:1rem;">${dest.emoji} ${dest.name}</strong> đã được tiết lộ!`;
+    document.getElementById('modal-reveal').classList.remove('hidden');
+    document.getElementById('stat-dest').textContent = dest.name.substring(0,4) + '.';
+}
+
+// ===== FAQ =====
+function renderFAQ() {
+    const el = document.getElementById('faq-list');
+    if (!el) return;
+    el.innerHTML = state.faqs.map((f, i) => `
+        <div class="faq-item" id="faq-${i}">
+            <div class="faq-q" onclick="toggleFAQ(${i})">
+                <span>${f.q}</span>
+                <i class="fa-solid fa-chevron-down"></i>
+            </div>
+            <div class="faq-a">${f.a}</div>
+        </div>
+    `).join('');
+}
+
+function toggleFAQ(i) {
+    const item = document.getElementById('faq-' + i);
+    item.classList.toggle('open');
+}
+
+// ===== PACKING LIST =====
+function togglePack(el) {
+    el.classList.toggle('checked');
+    const checked = document.querySelectorAll('#pack-list .pack-item.checked').length;
+    const total = document.querySelectorAll('#pack-list .pack-item').length;
+    if (checked === total) showToast('🎉 Hành lý đã sẵn sàng!', 'success');
+}
+
+function resetPack() {
+    document.querySelectorAll('#pack-list .pack-item').forEach(el => el.classList.remove('checked'));
+}
+
+// ===== RATING =====
+function rateStar(val) {
+    state.currentRating = val;
+    document.querySelectorAll('.star').forEach((s, i) => {
+        s.classList.toggle('active', i < val);
+    });
+}
+
+function submitReview() {
+    if (!state.currentRating) { showToast('Hãy chọn số sao trước!', 'error'); return; }
+    document.getElementById('review-section').innerHTML = `
+        <div class="review-submitted">
+            <i class="fa-solid fa-circle-check"></i>
+            <h3 style="font-size:1.1rem; font-weight:700; margin:0.5rem 0;">Cảm ơn đánh giá của bạn! ❤️</h3>
+            <p style="color:var(--text2); font-size:0.9rem;">Bạn đã cho <strong>${state.currentRating} sao</strong>. Đánh giá của bạn giúp cải thiện dịch vụ cho cộng đồng.</p>
+        </div>
+    `;
+    showToast('Đã gửi đánh giá thành công!', 'success');
+}
+
+// ===== REFERRAL =====
+function copyReferral() {
+    const code = document.getElementById('ref-code').textContent;
+    if (navigator.clipboard) {
+        navigator.clipboard.writeText(code).then(() => showToast('Đã sao chép mã: ' + code, 'success'));
+    } else {
+        showToast('Mã của bạn: ' + code, 'success');
+    }
+}
+
+// ===== WEATHER ANIMATION =====
+const weatherOptions = [
+    { temp:'28°C', status:'Nắng đẹp', icon:'☀️', hint:'Tuyệt vời để ra biển và chụp ảnh!', loc:'Điểm đến ven biển' },
+    { temp:'22°C', status:'Mát mẻ', icon:'⛅', hint:'Lý tưởng để trekking và khám phá.', loc:'Điểm đến vùng núi' },
+    { temp:'25°C', status:'Nắng nhẹ', icon:'🌤️', hint:'Thời tiết hoàn hảo cho mọi hoạt động!', loc:'Điểm đến thành phố' },
+];
+function animateWeather() {
+    const w = weatherOptions[Math.floor(Math.random() * weatherOptions.length)];
+    ['weather-temp', 'weather-status', 'weather-icon', 'weather-loc'].forEach((id, i) => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = [w.temp, w.status, w.icon, w.loc][i];
+    });
+    const hintEl = document.querySelector('.weather-hint');
+    if (hintEl) hintEl.textContent = w.hint;
+}
+
+// ===== INIT =====
+// Set default date to tomorrow
+const tomorrow = new Date(); tomorrow.setDate(tomorrow.getDate() + 1);
+const dateInput = document.getElementById('date');
+if (dateInput) dateInput.value = tomorrow.toISOString().split('T')[0];
+state.date = tomorrow.toISOString().split('T')[0];
+document.getElementById('sum-date').textContent = formatDate(state.date);
+</script>
+
+</body>
+</html>
